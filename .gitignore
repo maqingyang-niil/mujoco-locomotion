@@ -1,0 +1,25 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# MuJoCo runtime log
+MUJOCO_LOG.TXT
+MUJOCO_LOG*.TXT
+
+# Local Menagerie checkout used to import models
+/mujoco_menagerie/
+
+# Training outputs
+**/checkpoints/
+**/runs/
+**/wandb/
