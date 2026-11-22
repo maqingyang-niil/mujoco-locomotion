@@ -3,7 +3,7 @@
 
 
 environment:
-  xml_path: "../mujoco_menagerie/unitree/scene.xml"
+  xml_path: "mujoco_menagerie/unitree_go2/scene.xml"
   decimation: 10
   action_scale: 0.40
 
@@ -11,8 +11,8 @@ environment:
   kd: 1.4
 
   max_episode_steps: 1000 # 50hz的情况下20s
-  min_base_height: 0.12
-  max_pitch_roll: 0.8
+  base_height_min: 0.12
+  pitch_roll_max: 0.8
   reset_noise_scale: 0.1
 
   lin_vel_sigma: 0.20
@@ -55,8 +55,8 @@ curriculum:
 
 reward:
   weights:
-    tracking_lin_vel_xy: 1.5
-    tracking_ang_vel_xy: 0.75
+    track_lin_vel_xy: 1.5
+    track_ang_vel_yaw: 0.75
     gait_phase: 1.5
     foot_air_time: 1.0
     foot_height: -30.0

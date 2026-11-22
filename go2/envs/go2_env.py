@@ -5,11 +5,11 @@ import mujoco
 import mujoco.viewer
 import os
 from gymnasium import spaces
-from envs.commands import CommandRanges,Command,CommandCurriculum,CommandSampler
-from envs import gaits as gait_module
-from envs import rewards as reward_module
+from .commands import CommandRanges,Command,CommandCurriculum,CommandSampler
+from . import gaits as gait_module
+from . import rewards as reward_module
 class Go2Env(gym.Env):
-    PROJECT_ROOT=Path(__file__).resolve().parent[2]
+    PROJECT_ROOT=Path(__file__).resolve().parents[2]
     FOOT_GEOM_NAMES=("FL","FR","RL","RR")
     WORLD_GRAVITY_DIR=np.array([0.0,0.0,-1.0])
     OBS_SCALE_ANG_VEL=0.25
@@ -18,7 +18,7 @@ class Go2Env(gym.Env):
     OBS_SCALE_CMD=np.array([2.0,2.0,0.25],dtype=np.float64)
     def __init__(
             self,
-            xml_path=PROJECT_ROOT/"mojoco_menagerie"/"unitree_go2"/"scene.xml",
+            xml_path=PROJECT_ROOT/"mujoco_menagerie"/"unitree_go2"/"scene.xml",
             #rand
             decimation=10,
             action_scale=0.4,
@@ -34,7 +34,7 @@ class Go2Env(gym.Env):
             obs_noise_scale=0.0,
             #commands
             command_ranges=None,
-            stand_propability=0.1,
+            stand_probability=0.1,
             command_resample_interval_s=5.0,
             max_speed_per_hz=0.40,
             max_speed=1.0,
@@ -133,7 +133,7 @@ class Go2Env(gym.Env):
         self.max_stride_length=self.measure_stride_length()
         self.command_sampler=CommandSampler(
             ranges=command_ranges or CommandRanges(),
-            stand_probability=stand_propability,
+            stand_probability=stand_probability,
             resample_interval_s=command_resample_interval_s,
             gaits=tuple(gaits),
             max_speed_per_hz=max_speed_per_hz,
@@ -263,7 +263,7 @@ class Go2Env(gym.Env):
         c_lo,c_hi=self.model.jnt_range[calf_jnt_id]
 
         thigh_addr=int(self.model.jnt_qposadr[thigh_jnt_id])
-        calf_addr=int(self.model.qposadr[calf_jnt_id])
+        calf_addr=int(self.model.jnt_qposadr[calf_jnt_id])
 
         def foot_xz(dth,dca):
             mujoco.mj_resetDataKeyframe(self.model,data,self._home_key_id)
@@ -426,7 +426,7 @@ class Go2Env(gym.Env):
             joint_vel_prev=self.prev_jnt_vel.copy(),
             default_joint_pos=self.default_jnt_pos,
             soft_joint_limits=self.soft_jnt_limits,
-            torques=self.last_troques().copy(),
+            torques=self.last_troques.copy(),
             action_curr=self.curr_action.copy(),
             action_prev=self.prev_action.copy(),
             contact=contacts,

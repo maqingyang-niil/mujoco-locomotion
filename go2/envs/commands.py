@@ -1,7 +1,7 @@
 import numpy as np
 from dataclasses import dataclass
 from typing import Self
-from envs.gaits import GAITS_TYPES
+from .gaits import GAITS_TYPES
 
 
 

@@ -23,3 +23,5 @@ MUJOCO_LOG*.TXT
 **/checkpoints/
 **/runs/
 **/wandb/
+.vscode
+

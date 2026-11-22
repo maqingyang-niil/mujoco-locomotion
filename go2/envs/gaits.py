@@ -1,16 +1,16 @@
 import numpy as np
-from envs.utils import _backend
+from .utils import _backend
 # 四脚顺序
-FOOT_ORDER={"FL","FR","RL","RR"}
+FOOT_ORDER=("FL","FR","RL","RR")
 
 # 步态类型
 GAITS_DICT:dict[str,dict]={
-    "trot": {"offsets":{0.00,0.50,0.50,0.00},"duty":0.50},
-    "pace": {"offsets":{0.00,0.50,0.00,0.50},"duty":0.50},
-    "bound":{"offsets":{0.00,0.00,0.50,0.50},"duty":0.50},
-    "walk": {"offsets":{0.00,0.50,0.25,0.75},"duty":0.75},
-    "pronk":{"offsets":{0.00,0.00,0.00,0.00},"duty":0.50},
-    "stand":{"offsetd":{0.00,0.00,0.00,0.00},"duty":1.00},
+    "trot": {"offsets":(0.00,0.50,0.50,0.00),"duty":0.50},
+    "pace": {"offsets":(0.00,0.50,0.00,0.50),"duty":0.50},
+    "bound":{"offsets":(0.00,0.00,0.50,0.50),"duty":0.50},
+    "walk": {"offsets":(0.00,0.50,0.25,0.75),"duty":0.75},
+    "pronk":{"offsets":(0.00,0.00,0.00,0.00),"duty":0.50},
+    "stand":{"offsets":(0.00,0.00,0.00,0.00),"duty":1.00},
 }
 
 GAITS_TYPES=tuple(GAITS_DICT.keys())

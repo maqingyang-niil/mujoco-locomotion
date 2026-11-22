@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import numpy as np
-from envs.utils import _backend
+from .utils import _backend
 import jax
 
 
@@ -40,8 +40,7 @@ class RewardState:
     foot_new_contact:np.ndarray                # (4,) 上一控制部未接触地面，当前控制部接触地面的情况为1.0,其余为0.0
     foot_vel_xy:np.ndarray                     # (4,2) 脚的xy方向的角速度
     foot_height:np.ndarray                     # (4,) 脚里地面的高度，世界坐标系
-    target_foot_height:float=0.08              # 期望足部的腾空高度
-    target_swing_time:float=0.25               # 期望足部的腾空时间
+    
 
     # 命令
     cmd:np.ndarray                             # (4,) 命令：x方向线速度，y方向线速度，yaw方向角速度,机身高度
@@ -57,6 +56,8 @@ class RewardState:
     '''
     lin_vel_sigma:float=0.20                   
     ang_vel_sigma:float=0.25
+    target_foot_height:float=0.08              # 期望足部的腾空高度
+    target_swing_time:float=0.25               # 期望足部的腾空时间
 
 # xy线速度
 def track_lin_vel_xy(r:RewardState):
