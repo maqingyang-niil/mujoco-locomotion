@@ -64,7 +64,7 @@ class Go2Env(gym.Env):
         self.action_scale=float(action_scale)
         self.kd=float(kd)
         self.kp=float(kp)
-        self.max_episode_length=int(self.max_episode_length)
+        self.max_episode_steps=int(max_episode_steps)
         self.base_height_min=float(base_height_min)
         self.pitch_roll_max=float(pitch_roll_max)
         self.reset_noise_scale=float(reset_noise_scale)
@@ -609,7 +609,7 @@ class Go2Env(gym.Env):
         reward=float(raw_reward)*self.dt
         self.reward_terms={k: float(v)*self.dt for k,v in terms.items()}
         terminated=self._check_termination(trunk)
-        truncated=self.step_cnt>=self.max_episode_length
+        truncated=self.step_cnt>=self.max_episode_steps
 
         info=self._build_info(state,contacts)
 
