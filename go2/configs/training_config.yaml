@@ -36,7 +36,6 @@ commands:
     lin_vel_x: [-0.5,0.85]
     lin_vel_y: [-0.3,0.3]
     ang_vel_yaw: [-0.8,0.8]
-
     gait_frequency: [1.8,3.0]
     base_height: [0.29,0.31]
 
@@ -96,12 +95,12 @@ training:
     log_std_init: -1.0
 
 logging:
-  log_dir: "../logs/"
-  model_dir: "../models/"
+  log_dir: "go2/logs/"
+  model_dir: "go2/models/"
   save_freq: 500000
   eval_freq: 200000
   n_eval_episodes: 10
-  tensorboard_log: "../logs/tensorboard/"
+  tensorboard_log: "go2/logs/tensorboard/"
 
 
     
