@@ -2,24 +2,13 @@
 
 
 import argparse
-from ast import arg, parse
-from asyncio import trsock
-from email.policy import Policy
-from multiprocessing import dummy
-from multiprocessing.spawn import import_main_path
-import trace
-from typing import final
-from jax.core import nonempty_axis_env_DO_NOT_USE
-from sympy import false, is_monotonic
-from torch import norm
-from wandb.docker import parse_repository_tag
 import yaml
 from stable_baselines3 import PPO
 from go2.envs.commands import ranges_from_config
 from go2.envs.go2_env import Go2Env
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv,SubprocVecEnv,VecNormalize
-from stable_baselines3.common.utils import get_linear_fn
+from stable_baselines3.common.utils import LinearSchedule
 from stable_baselines3.common.callbacks import (
     CallbackList,
     CheckpointCallback,
@@ -36,7 +25,7 @@ GO2_ROOT=Path(__file__).resolve().parents[1]
 
 
 def build_env_kwargs(config:dict):
-    env_cfg=config.get("environment",{}) or {}
+    env_cfg = dict(config["environment"])
     cmd_cfg=config.get("commands",{}) or {}
     reward_cfg=(config.get("reward",{}) or {}).get("weights")
     initial=ranges_from_config(cmd_cfg.get("initial"))
@@ -64,7 +53,7 @@ def make_env(env_kwargs:dict,rank:int,seed=0):
 def _guess_vecnormalize_path(model_path):
     directory,filename=os.path.split(model_path)
     stem=os.path.splitext(filename)[0]
-    for "_" in stem:
+    if "_" in stem:
         head,_,tail=stem.partition("_")
         candidate=os.path.join(directory,head+"_vecnormalize_"+tail+".pkl")
         if os.path.exists(candidate):
@@ -80,7 +69,7 @@ def main():
     parser=argparse.ArgumentParser(description="Training Go2 Quadruped with PPO")
     parser.add_argument("--config",type=str,default=GO2_ROOT/"configs"/"training_config.yaml")
     parser.add_argument("--resume",type=str,default=None,help="需要一个模型的.zip文件和对应的VecNormalize文件")
-    parser.add_argument("--vecnormalise",type=str,default=None,help="需要VecNormalize的.pkl文件初始化模型")
+    parser.add_argument("--vecnormalize",type=str,default=None,help="需要VecNormalize的.pkl文件初始化模型")
     parser.add_argument("--seed",type=int,default=None)
     parser.add_argument("--device",type=str,default="auto")
     parser.add_argument("--n-env",type=int,default=None)
@@ -100,7 +89,7 @@ def main():
     log_cfg=config["logging"]
 
     seed=args.seed if args.seed is not None else train_cfg.get("seed",0)
-    n_envs=args.n_envs if args.n_envs is not None else train_cfg.get("n_envs",16)
+    n_envs=args.n_env if args.n_env is not None else train_cfg.get("n_envs",16)
     total_timesteps=args.timesteps if args.timesteps is not None else train_cfg.get("total_timesteps")
 
     model_dir=log_cfg["model_dir"]
@@ -165,7 +154,7 @@ def main():
     lr=train_cfg.get("learning_rate")
 
     if train_cfg.get("lr_schedule","constant")=="linear":
-        lr=get_linear_fn(start=float(lr),end=0.0,end_fraction=1.0)
+        lr=LinearSchedule(start=float(lr),end=0.0,end_fraction=1.0)
 
     if args.resume:
         print("Resuming from "+args.resume)
@@ -221,13 +210,13 @@ def main():
         )
     finally:
         model.save(os.path.join(model_dir,args.run_name+"_final"))
-        env.save(os.path.join(model_dir,args.run_name+"_vecnornalize.pkl"))
+        env.save(os.path.join(model_dir,args.run_name+"_vecnormalize.pkl"))
         print("Saved model and normalisation statistics to "+model_dir)
 
 
 if __name__=="__main__":
     main()
-    
+
 
 
     

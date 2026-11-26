@@ -24,6 +24,7 @@ class CommandCurriculumCallback(BaseCallback):
     '''
     force:是否强制发送
     如果不强制推送,并且当前level没有发生变化,就直接退出
+    命令范围通过env_method函数同步到所有的环境
     '''
     def _push_ranges(self,force:bool=False)->None:
         level=self.curriculum.level

@@ -24,7 +24,10 @@ class CommandRanges:
             return ((1.0-t)*a[0]+t*b[0],(1.0-t)*a[1]+t*b[1])
         return CommandRanges(
             lin_vel_x=_interpolate(self.lin_vel_x,other.lin_vel_x),
-            lin_vel_y=_interpolate(self.lin_vel_y,other.lin_vel_y)
+            lin_vel_y=_interpolate(self.lin_vel_y,other.lin_vel_y),
+            ang_vel_yaw=_interpolate(self.ang_vel_yaw,other.ang_vel_yaw),
+            gait_frequency=_interpolate(self.gait_frequency,other.gait_frequency),
+            base_height=_interpolate(self.base_height,other.base_height)
         )
 
     # 输出命令范围字典
@@ -152,8 +155,8 @@ class CommandCurriculum:
         initial_comm:CommandRanges,
         final_comm:CommandRanges,
         threshold=0.85,
-        step=0.05,
         decay_threshold=0.65,
+        step=0.05,
     ):
         self.initial_comm=initial_comm
         self.final_comm=final_comm
@@ -162,6 +165,9 @@ class CommandCurriculum:
         self.step=float(step)
         self.level=0.0
 
+    '''
+    根据tracking score和step来提升或者下降level
+    '''
     def update(self,tracking_score)->float:
         if tracking_score>=self.threshold:
             self.level=min(1.0,self.level+self.step)
@@ -169,6 +175,9 @@ class CommandCurriculum:
             self.level=max(0.0,self.level-self.step)
         return self.level
 
+    '''
+    返回根据当前level对initial和final做完线性插值后的新范围
+    '''
     @property
     def ranges(self)->CommandRanges:
         return self.initial_comm.linear_interpolate(self.final_comm,self.level)

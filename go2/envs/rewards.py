@@ -1,7 +1,7 @@
+from __future__ import annotations
 from dataclasses import dataclass
 import numpy as np
 from .utils import _backend
-import jax
 
 
 
@@ -16,8 +16,8 @@ import jax
 class RewardState:
 
     # 基座状态
-    lin_vel_base:np.ndarray|jax.Array          # (3,) 线性速度，机身坐标系
-    ang_vel_base:np.ndarray|jax.Array          # (3,) 角速度，机身坐标系
+    lin_vel_base:np.ndarray                    # (3,) 线性速度，机身坐标系
+    ang_vel_base:np.ndarray                    # (3,) 角速度，机身坐标系
     proj_gravity:np.ndarray                    # (3,) 重力方向，机身坐标系
     base_height:float                          # 机身高度
 
@@ -210,7 +210,7 @@ def resolve_weights(cfg:dict):
         unknown=set(cfg)-set(REWARD_TERMS)
         if unknown:
             raise KeyError("unknown terms in config: %s"% sorted(unknown))
-    weights.update({k: float(v) for k,v in cfg.items()})
+        weights.update({k: float(v) for k,v in cfg.items()})
     return weights
 
 # 计算非零奖励函数权重

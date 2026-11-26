@@ -24,4 +24,6 @@ MUJOCO_LOG*.TXT
 **/runs/
 **/wandb/
 .vscode
+logs/
+models/
 

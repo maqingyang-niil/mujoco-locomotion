@@ -27,7 +27,7 @@ def main():
 
     confirmation=input("输入yes:")
 
-    if confirmation!="yes" or confirmation!="y":
+    if confirmation!="yes":
         print("已取消，没有删除任何文件。")
         return
 

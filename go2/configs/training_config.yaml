@@ -25,7 +25,7 @@ environment:
   obs_noise_scale: 0.0
 
 commands:
-  gaits: ["trot"]
+  gaits: ["trot","pace"]
   stand_probability: 0.10
   max_speed_per_hz: 0.40
   max_speed: 1.0
@@ -40,11 +40,11 @@ commands:
     base_height: [0.29,0.31]
 
   final:
-    lin_vel_x: [-0.70,0.85]
-    lin_vel_y: [-0.40,0.40]
+    lin_vel_x: [-1.5,1.5]
+    lin_vel_y: [-1.0,1.0]
     ang_vel_yaw: [-1.5,1.5]
-    gait_frequency: [1.5,3.0]
-    base_height: [0.27,0.34]
+    gait_frequency: [1.5,4.5]
+    base_height: [0.25,0.39]
 
 curriculum:
   enable: true

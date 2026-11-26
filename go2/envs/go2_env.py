@@ -30,7 +30,7 @@ class Go2Env(gym.Env):
             pitch_roll_max=0.8,
             #randomisation
             randomize_dynamics=False,
-            reset_noise_scale=1.0,
+            reset_noise_scale=0.1,
             obs_noise_scale=0.0,
             #commands
             command_ranges=None,
@@ -628,22 +628,22 @@ class Go2Env(gym.Env):
 
     # 创建诊断信息
     def _build_info(self,state,contacts):
-        lin_err=float(np.linalg.norm(state.cmd[:2] - state.lin_vel_base[:2]))
-        ang_err = float(abs(state.cmd[2] - state.ang_vel_base[2]))
+        lin_err=float(np.linalg.norm(state.cmd[:2]-state.lin_vel_base[:2]))
+        ang_err=float(abs(state.cmd[2]-state.ang_vel_base[2]))
         info = {
-            "x_position": float(self.data.qpos[0]),
-            "base_height": float(self.data.qpos[2]),
-            "lin_vel_b": state.lin_vel_base.copy(),
-            "ang_vel_b": state.ang_vel_base.copy(),
-            "cmd": state.cmd.copy(),
-            "gait": self.command.gait,
-            "gait_phase": self.gait_phase,
+            "x_position":float(self.data.qpos[0]),
+            "base_height":float(self.data.qpos[2]),
+            "lin_vel_b":state.lin_vel_base.copy(),
+            "ang_vel_b":state.ang_vel_base.copy(),
+            "cmd":state.cmd.copy(),
+            "gait":self.command.gait,
+            "gait_phase":self.gait_phase,
             "contacts": contacts.copy(),
-            "tracking_lin_err": lin_err,
-            "tracking_ang_err": ang_err,
+            "tracking_lin_err":lin_err,
+            "tracking_ang_err":ang_err,
             "tracking_score": float(
-                np.exp(-lin_err ** 2 / self.lin_vel_sigma) * 0.5
-                + np.exp(-ang_err ** 2 / self.ang_vel_sigma) * 0.5
+                np.exp(-lin_err**2/self.lin_vel_sigma)*0.5
+                + np.exp(-ang_err**2/self.ang_vel_sigma)*0.5
             ),
         }
         self.tracking_scores.append(info["tracking_score"])
@@ -659,11 +659,11 @@ class Go2Env(gym.Env):
                 self.renderer=mujoco.Renderer(self.model,height=h,width=w)
                 self.camera=mujoco.MjvCamera()
                 self.camera.type=mujoco.mjtCamera.mjCAMERA_TRACKING
-                self._camera.trackbodyid = self.base_body_id
-                self._camera.distance = 2.0
-                self._camera.azimuth = 135
-                self._camera.elevation = -20
-            self.renderer.update_scene(self.data, camera=self.camera)
+                self._camera.trackbodyid=self.base_body_id
+                self._camera.distance=2.0
+                self._camera.azimuth=135
+                self._camera.elevation=-20
+            self.renderer.update_scene(self.data,camera=self.camera)
             return self.renderer.render()
         return None
 
