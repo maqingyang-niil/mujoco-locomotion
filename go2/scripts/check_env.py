@@ -5,10 +5,7 @@
 import argparse
 from pathlib import Path
 from random import sample
-from turtle import end_poly
-from torch import margin_ranking_loss
 from go2.envs.gaits import gait_params
-from sympy import ask, false, true
 import yaml
 from go2.envs.commands import CommandRanges, ranges_from_config
 from go2.envs.go2_env import Go2Env
@@ -25,7 +22,7 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument("--config",default=GO2_ROOT/"configs"/"training_config.yaml")
     p.add_argument("--steps",type=int,default=1000)
-    p.add_argument("--ranges",choices=("initial,final"),default="initial",
+    p.add_argument("--ranges",choices=("initial","final"),default="initial",
                    help="Which command ranges to check. INITIAL is where the " \
                    "curriculum starts from and decides whether or not the simulation " \
                    "is learnable.")
@@ -102,26 +99,32 @@ def main():
     print("margin              : %.2f" % margin)
 
     print("%-9s %12s %14s" % ("frequency", "static bound", "sampler limit"))
-    for f in (1.5, 2.0, 2.5, 3.0):
-        v = float("inf")
+    f_min,f_max=command_ranges.gait_frequency
+
+    def sampler_limit(f):
+        v=float("inf")
         if sampler.max_speed_per_hz:
-            v = sampler.max_speed_per_hz * f
+            v=sampler.max_speed_per_hz*f
         if sampler.max_speed:
-            v = min(v, sampler.max_speed)
-        print("%7.1f Hz %11.2f %14.2f" % (f, stride * f, v * margin))
-    asked = max(abs(command_ranges.lin_vel_x[0]), abs(command_ranges.lin_vel_x[1]))
-    v = float("inf")
-    if sampler.max_speed_per_hz:
-        v = sampler.max_speed_per_hz * command_ranges.gait_frequency[1]
-    if sampler.max_speed:
-        v = min(v, sampler.max_speed)
-    reachable = v * margin
+            v=min(v,sampler.max_speed)
+        return v*margin
+    freqs=np.append(np.arange(f_min,f_max,0.5),f_max)
+    for f in freqs:
+        limit = sampler_limit(f)
+        print(
+            "%7.1f Hz %11.2f %14.2f"
+            % (f, stride * f, limit)
+        )
+    asked_x=max(abs(x) for x in command_ranges.lin_vel_x)
+    asked_y=max(abs(y) for y in command_ranges.lin_vel_y)
+    reachable_x=sampler_limit(f_max)
+    reachable_y=0.5*reachable_x
+    speed_ok=asked_x<=reachable_x+1e-6 and asked_y<=reachable_y+1e-6
     print()
-    print("速度绝对值          : %.2f m/s" % asked)
-    print("步频取最大值%.1f Hz,最多给机器人 %.2f m/s的速度命令" % (command_ranges.gait_frequency[1],reachable))
-    print()
-    print("torque verdict      : %s" % ("OK" if torque_ok else "NOT OK"))
-    print("speed verdict       : %s" % ("OK" if asked>reachable+1e-6 else "NOT OK"))
+    print("vx requested/reachable    :%.2f / %.2f" % (asked_x,asked_y))
+    print("vy requested/reachable    :%.2f / %.2f" % (asked_y,asked_y))
+    print("torque verdicr            :%s" % ("OK" if torque_ok else "NOT OK"))
+    print("speed verdicr             :%s" % ("OK" if speed_ok else "NOT OK"))
 
     section("静止策略基线")
     rng=np.random.default_rng(0)
