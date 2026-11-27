@@ -1,11 +1,11 @@
-.PHONY: check train clear evaluate
+.PHONY: check train clear evaluate evaluate-grid gait_analysis
 
 RUN ?=go2_ppo
 PY ?=uv run python -m
 CONFIG ?=go2/configs/training_config.yaml
 MODEL ?=go2/models/$(RUN)_final.zip
 VECNORMALIZE ?= go2/models/$(RUN)_vecnormalize.pkl
-
+GAIT ?=pace
 
 
 
@@ -27,3 +27,9 @@ evaluate-grid:
 
 play:
 	$(PY) go2.scripts.play --model $(MODEL) --vec-normalize $(VECNORMALIZE)
+
+gait-analysis:
+	$(PY) go2.scripts.gait_analysis \
+		--model $(MODEL) \
+		--vec-normalize $(VECNORMALIZE) \
+		--gait $(GAIT)
